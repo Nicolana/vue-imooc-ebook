@@ -28,12 +28,14 @@
       toggleTitleAndMenu () {
         if (this.menuVisible) {
           this.setSettingVisible(-1)
+          this.setFontFamilyVisible(false)
         }
         this.setMenuVisible(!this.menuVisible)
       },
       hiddeTitleAndMenu () {
         this.setMenuVisible(false)
         this.setSettingVisible(-1)
+        this.setFontFamilyVisible(false)
       },
       initEpub () {
         const url = 'http://static.helloworld.com:8081/epub/' + this.fileName + '.epub'
@@ -61,6 +63,14 @@
           }
           // event.preventDefault()
           event.stopPropagation()
+        })
+        this.rendition.hooks.content.register(contents => {
+          Promise.all([
+            contents.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/daysOne.css`),
+            contents.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/cabin.css`),
+            contents.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/montserrat.css`),
+            contents.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/tangerine.css`)
+          ])
         })
       }
     },
