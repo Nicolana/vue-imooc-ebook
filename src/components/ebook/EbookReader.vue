@@ -26,14 +26,19 @@
         }
       },
       toggleTitleAndMenu () {
+        if (this.menuVisible) {
+          this.setSettingVisible(-1)
+        }
         this.setMenuVisible(!this.menuVisible)
       },
       hiddeTitleAndMenu () {
         this.setMenuVisible(false)
+        this.setSettingVisible(-1)
       },
       initEpub () {
         const url = 'http://static.helloworld.com:8081/epub/' + this.fileName + '.epub'
         this.book = new Epub(url)
+        this.setCurrentBook(this.book)
         this.rendition = this.book.renderTo('read', {
           width: innerWidth,
           height: innerHeight,
