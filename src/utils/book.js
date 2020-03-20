@@ -101,10 +101,66 @@ export function themeList (vue) {
   ]
 }
 
+// 利用disabled 实现CSS动态加载
+// 对每个CSS文件，仅需加载一次，减少HTTP请求数量，优化使用体验
 export function addCss (href) {
-  const link = document.createElement('link')
-  link.setAttribute('rel', 'stylesheet')
-  link.setAttribute('type', 'text/css')
-  link.setAttribute('href', href)
-  document.getElementsByTagName('head')[0].appendChild(link)
+  let flag = false // link存在哨兵
+  let currentLink = null // 如何link已经存在，记录该节点
+  const result = []
+  const links = document.getElementsByTagName('link')
+  for (let i = links.length; i >= 0; i--) {
+    const link = links[i]
+    if (link && link.getAttribute('href')) {
+      if (link.getAttribute('href') === href) {
+        flag = true
+        currentLink = link
+      } else {
+        result.push(link)
+      }
+    }
+  }
+  if (!flag) {
+    const beforeLinks = getBeforeCss()
+    const link = document.createElement('link')
+    link.setAttribute('rel', 'stylesheet')
+    link.setAttribute('type', 'text/css')
+    link.setAttribute('href', href)
+    link.onload = link.readystatechange = function () {
+      // 必须等link加载并渲染完成后才禁用原来的CSS link，页面才不会闪烁
+      disableAllCSS(beforeLinks)
+    }
+    document.getElementsByTagName('head')[0].appendChild(link)
+  } else {
+    disableAllCSS(result)
+    currentLink.removeAttribute('disabled')
+  }
+}
+
+export function disableAllCSS (links) {
+  for (let i = links.length; i >= 0; i--) {
+    const link = links[i]
+    if (link) {
+      link.setAttribute('disabled', true)
+    }
+  }
+}
+
+export function getBeforeCss () {
+  const urls = [
+    `${process.env.VUE_APP_RES_URL}/theme/theme_default.css`,
+    `${process.env.VUE_APP_RES_URL}/theme/theme_gray.css`,
+    `${process.env.VUE_APP_RES_URL}/theme/theme_eye.css`,
+    `${process.env.VUE_APP_RES_URL}/theme/theme_gold.css`,
+    `${process.env.VUE_APP_RES_URL}/theme/theme_night.css`,
+    `${process.env.VUE_APP_RES_URL}/theme/theme_default.css`
+  ]
+  const result = []
+  const links = document.getElementsByTagName('link')
+  for (let i = links.length; i >= 0; i--) {
+    const link = links[i]
+    if (link && urls.indexOf(link.getAttribute('href')) >= 0) {
+      result.push(link)
+    }
+  }
+  return result
 }

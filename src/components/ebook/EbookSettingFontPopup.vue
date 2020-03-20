@@ -28,7 +28,7 @@
 <script>
   import { FONT_FAMILY_LIST } from '../../utils/book'
   import { ebookMixin } from '../../utils/mixin'
-  import { setLocalStorage, getLocalStorage, saveFontFamily } from '../../utils/localStorage'
+  import { setLocalStorage, saveFontFamily } from '../../utils/localStorage'
 
   export default {
     name: 'EbookSettingFontPopup',
@@ -59,7 +59,7 @@
     },
     mounted () {
       setLocalStorage(this.fileName, this.defaultFontFamily)
-      console.log(getLocalStorage(this.fileName))
+      // console.log(getLocalStorage(this.fileName))
     }
   }
 </script>
