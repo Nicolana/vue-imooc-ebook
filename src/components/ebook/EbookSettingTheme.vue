@@ -25,6 +25,7 @@
           this.currentBook.rendition.themes.select(this.defaultTheme)
         })
         saveTheme(this.fileName, theme.name)
+        this.initGlobalStyle()
       }
     }
   }
