@@ -28,6 +28,8 @@
 <script>
   import { FONT_FAMILY_LIST } from '../../utils/book'
   import { ebookMixin } from '../../utils/mixin'
+  import { setLocalStorage, getLocalStorage, saveFontFamily } from '../../utils/localStorage'
+
   export default {
     name: 'EbookSettingFontPopup',
     mixins: [ebookMixin],
@@ -46,7 +48,7 @@
       setFontFamily (font) {
         this.setDefaultFontFamily(font)
         this.hide()
-
+        saveFontFamily(this.fileName, font)
         // 修改电子书字体
         if (font === 'Default') {
           this.currentBook.rendition.themes.font('Times New Roman')
@@ -54,6 +56,10 @@
           this.currentBook.rendition.themes.font(font)
         }
       }
+    },
+    mounted () {
+      setLocalStorage(this.fileName, this.defaultFontFamily)
+      console.log(getLocalStorage(this.fileName))
     }
   }
 </script>

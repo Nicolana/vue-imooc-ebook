@@ -8,6 +8,7 @@
 <script>
   import { ebookMixin } from '../../utils/mixin'
   import Epub from 'epubjs'
+  import { getFontFamily, getFontSize, saveFontFamily, saveFontSize } from '../../utils/localStorage'
   global.ePub = Epub
   export default {
     name: 'EbookReader',
@@ -46,7 +47,26 @@
           height: innerHeight,
           method: 'default'
         })
-        this.rendition.display()
+        this.rendition.display().then(() => {
+          // Font Setting
+          const font = getFontFamily(this.fileName)
+          if (!font) {
+            saveFontFamily(this.fileName, this.defaultFontFamily)
+          } else {
+            // 有配置字体
+            this.rendition.themes.font(font)
+            this.setDefaultFontFamily(font)
+          }
+          // Fontsize Setting
+          const fontSize = getFontSize(this.fileName)
+          if (!fontSize) {
+            saveFontSize(this.fileName, this.defaultFontSize)
+          } else {
+            // 有配置字体
+            this.rendition.themes.fontSize(fontSize)
+            this.setDefaultFontSize(fontSize)
+          }
+        })
         this.rendition.on('touchstart', event => {
           this.touchStartX = event.changedTouches[0].clientX
           this.touchStartTime = event.timeStamp
