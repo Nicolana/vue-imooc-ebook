@@ -75,3 +75,11 @@ export function getMetadata (fileName) {
 export function saveMetadata (fileName, metadata) {
   return setBookObject(fileName, 'metadata', metadata)
 }
+
+export function getLocale (fileName) {
+  return getBookObject(fileName, 'locale')
+}
+
+export function saveLocale (fileName, locale) {
+  return setBookObject(fileName, 'locale', locale)
+}
