@@ -38,6 +38,28 @@
         this.setSettingVisible(-1)
         this.setFontFamilyVisible(false)
       },
+      initFontSize () {
+        // Fontsize Setting
+        const fontSize = getFontSize(this.fileName)
+        if (!fontSize) {
+          saveFontSize(this.fileName, this.defaultFontSize)
+        } else {
+          // 有配置字体
+          this.rendition.themes.fontSize(fontSize)
+          this.setDefaultFontSize(fontSize)
+        }
+      },
+      initFontFamily () {
+        // Font Setting
+        const font = getFontFamily(this.fileName)
+        if (!font) {
+          saveFontFamily(this.fileName, this.defaultFontFamily)
+        } else {
+          // 有配置字体
+          this.rendition.themes.font(font)
+          this.setDefaultFontFamily(font)
+        }
+      },
       initEpub () {
         const url = 'http://static.helloworld.com:8081/epub/' + this.fileName + '.epub'
         this.book = new Epub(url)
@@ -48,24 +70,8 @@
           method: 'default'
         })
         this.rendition.display().then(() => {
-          // Font Setting
-          const font = getFontFamily(this.fileName)
-          if (!font) {
-            saveFontFamily(this.fileName, this.defaultFontFamily)
-          } else {
-            // 有配置字体
-            this.rendition.themes.font(font)
-            this.setDefaultFontFamily(font)
-          }
-          // Fontsize Setting
-          const fontSize = getFontSize(this.fileName)
-          if (!fontSize) {
-            saveFontSize(this.fileName, this.defaultFontSize)
-          } else {
-            // 有配置字体
-            this.rendition.themes.fontSize(fontSize)
-            this.setDefaultFontSize(fontSize)
-          }
+          this.initFontSize()
+          this.initFontFamily()
         })
         this.rendition.on('touchstart', event => {
           this.touchStartX = event.changedTouches[0].clientX
