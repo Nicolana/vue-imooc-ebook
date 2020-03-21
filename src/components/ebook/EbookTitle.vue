@@ -26,6 +26,7 @@
     mixins: [ebookMixin],
     name: 'EbookTitle',
     methods: {
+      // TODO : 首页设置完毕后来阅读返回首页功能
       back () {
         console.log('TODO: go back to shelf')
       }
