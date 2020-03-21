@@ -24,13 +24,17 @@
       prevPage () {
         if (this.rendition) {
           this.hiddeTitleAndMenu()
-          this.rendition.prev()
+          this.rendition.prev().then(() => {
+            this.refreshLocation()
+          })
         }
       },
       nextPage () {
         if (this.rendition) {
           this.hiddeTitleAndMenu()
-          this.rendition.next()
+          this.rendition.next().then(() => {
+            this.refreshLocation()
+          })
         }
       },
       toggleTitleAndMenu () {
@@ -90,6 +94,7 @@
           this.initFontSize()
           this.initFontFamily()
           this.initGlobalStyle()
+          this.refreshLocation()
         })
         this.rendition.hooks.content.register(contents => {
           Promise.all([
