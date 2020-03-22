@@ -9,12 +9,14 @@
           class="slide-contents-search-input"
           type="text"
           :placeholder="$t('book.searchHint')"
+          v-model="searchText"
+          @keyup.enter.exact="search()"
           @click="showSearchPage"
         >
       </div>
       <div class="slide-contents-search-cancel" v-if="searchVisible" @click="hideSearchPage">{{$t('book.cancel')}}</div>
     </div>
-    <div class="slide-contents-book-wrapper">
+    <div class="slide-contents-book-wrapper" v-show="!searchVisible">
       <div class="slide-contents-book-img-wrapper">
         <img :src="cover" alt="" class="slide-contents-book-img">
       </div>
@@ -35,6 +37,7 @@
       class="slide-contents-list"
       :top="156"
       :bottom="48"
+      v-show="!searchVisible"
       ref="scroll"
     >
       <div class="slide-contents-item" v-for="(item, index) in navigation" :key="index">
@@ -45,6 +48,21 @@
           @click="display(item.href, hideTitleAndMenu)"
         >{{item.label}}</span>
         <span class="slide-contents-item-page"></span>
+      </div>
+    </scroll>
+    <scroll
+      class="slide-search-list"
+      :top="60"
+      :bottom="48"
+      v-show="searchVisible"
+    >
+      <div
+        class="slide-search-item"
+        v-for="(item, index) in searchList"
+        :key="index"
+        v-html="item.excerpt"
+        @click="displayCotnent(item.cfi, true)"
+      >
       </div>
     </scroll>
   </div>
@@ -62,21 +80,50 @@
     mixins: [ebookMixin],
     data () {
       return {
-        searchVisible: false
+        searchVisible: false,
+        searchList: null,
+        searchText: ''
       }
     },
     methods: {
+      search () {
+        if (this.searchText && this.searchText.length > 0) {
+          this.doSearch(this.searchText).then(results => {
+            this.searchList = results
+            this.searchList.map(item => {
+              item.excerpt = item.excerpt.replace(this.searchText, `<span class="content-search-text">${this.searchText}</span>`)
+            })
+          })
+        }
+      },
+      displayCotnent (target, highlight = false) {
+        this.display(target, () => {
+          this.hideTitleAndMenu()
+          if (highlight) {
+            this.currentBook.rendition.annotations.highlight(target)
+          }
+        })
+      },
       showSearchPage () {
         this.searchVisible = true
       },
       hideSearchPage () {
         this.searchVisible = false
+        this.searchText = ''
+        this.searchList = []
       },
       contentItemStyle (item) {
         return {
           marginLeft: `${px2rem(item.level * 20)}rem`
         }
+      },
+      doSearch (q) { // 查询算法
+        return Promise.all(
+          this.currentBook.spine.spineItems.map(item => item.load(this.currentBook.load.bind(this.currentBook)).then(item.find.bind(item, q)).finally(item.unload.bind(item)))
+        ).then(results => Promise.resolve([].concat.apply([], results)))
       }
+    },
+    mounted () {
     }
   }
 </script>
@@ -181,6 +228,17 @@
           @include ellipsis2(1)
         }
         .slide-contents-item-page {}
+      }
+    }
+    .slide-search-list {
+      width: 100%;
+      padding: 0 px2rem(15);
+      box-sizing: border-box;
+      .slide-search-item {
+        font-size: px2rem(14);
+        line-height: px2rem(16);
+        padding: px2rem(20) 0;
+        box-sizing: border-box;
       }
     }
   }

@@ -24,7 +24,7 @@
             </div>
           </div>
         </transition>
-        <div class="content-bg" @click="hiddeTitleAndMenu()"></div>
+        <div class="content-bg" @click="hideTitleAndMenu()"></div>
       </div>
   </transition>
 </template>
