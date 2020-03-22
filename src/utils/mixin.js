@@ -79,13 +79,20 @@ export const ebookMixin = {
       const startCfi = currentLocation.start.cfi
       const progress = this.currentBook.locations?.percentageFromCfi(startCfi)
       this.setProgress(Math.floor(progress * 100))
+      this.setSection(currentLocation.start.index)
       saveLocation(this.fileName, startCfi)
     },
-    display (target) {
+    display (target, cb) {
       if (target) {
-        return this.rendition.display(target)
+        this.currentBook.rendition.display(target).then(() => {
+          this.refreshLocation()
+          if (cb) cb()
+        })
       } else {
-        return this.rendition.display()
+        this.currentBook.rendition.display().then(() => {
+          this.refreshLocation()
+          if (cb) cb()
+        })
       }
     }
   }

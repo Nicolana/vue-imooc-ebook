@@ -14,7 +14,8 @@
     getTheme,
     saveFontFamily,
     saveFontSize,
-    saveTheme
+    saveTheme,
+    getLocation
   } from '../../utils/localStorage'
   global.ePub = Epub
   export default {
@@ -89,12 +90,12 @@
           height: innerHeight,
           method: 'default'
         })
-        this.rendition.display().then(() => {
+        const location = getLocation(this.fileName)
+        this.display(location, () => {
           this.initTheme()
           this.initFontSize()
           this.initFontFamily()
           this.initGlobalStyle()
-          this.refreshLocation()
         })
         this.rendition.hooks.content.register(contents => {
           Promise.all([
@@ -135,6 +136,7 @@
           return this.book.locations.generate(750 * (window.innerWidth / 375) * (getFontSize((this.fileName) / 16)))
         }).then(locations => {
           this.setBookAvailable(true)
+          this.refreshLocation()
         })
       }
     },

@@ -91,3 +91,11 @@ export function getLocation (fileName) {
 export function saveLocation (fileName, location) {
   return setBookObject(fileName, 'location', location)
 }
+
+export function getReadTime (fileName) {
+  return getBookObject(fileName, 'readTime')
+}
+
+export function saveReadTime (fileName, readTime) {
+  return setBookObject(fileName, 'readTime', readTime)
+}
