@@ -7,6 +7,7 @@
 
 <script>
   import { ebookMixin } from '../../utils/mixin'
+  import { flatten } from '../../utils/book'
   import Epub from 'epubjs'
   import {
     getFontFamily,
@@ -24,7 +25,7 @@
     methods: {
       prevPage () {
         if (this.rendition) {
-          this.hiddeTitleAndMenu()
+          this.hideTitleAndMenu()
           this.rendition.prev().then(() => {
             this.refreshLocation()
           })
@@ -32,7 +33,7 @@
       },
       nextPage () {
         if (this.rendition) {
-          this.hiddeTitleAndMenu()
+          this.hideTitleAndMenu()
           this.rendition.next().then(() => {
             this.refreshLocation()
           })
@@ -44,11 +45,6 @@
           this.setFontFamilyVisible(false)
         }
         this.setMenuVisible(!this.menuVisible)
-      },
-      hiddeTitleAndMenu () {
-        this.setMenuVisible(false)
-        this.setSettingVisible(-1)
-        this.setFontFamilyVisible(false)
       },
       initFontSize () {
         // Fontsize Setting
@@ -125,12 +121,38 @@
           event.stopPropagation()
         })
       },
+      parseBook () {
+        this.book.loaded.cover.then((cover) => {
+          this.book.archive.createUrl(cover).then(url => {
+            this.setCover(url)
+          })
+        })
+        this.book.loaded.metadata.then(metadata => {
+          this.setMetadata(metadata)
+        })
+        this.book.loaded.navigation.then(nav => {
+          const navigation = flatten(nav.toc)
+          function find (item, level = 0) {
+            if (!item.parent) {
+              return level
+            } else {
+              return find(navigation.filter(parentItem => parentItem.id === item.parent)[0], ++level)
+            }
+          }
+          navigation.forEach(item => {
+            item.level = find(item)
+          })
+          // this.saveNavigation(this.fileName, navigation)
+          this.setNavigation(navigation)
+        })
+      },
       initEpub () {
         const url = `${process.env.VUE_APP_RES_URL}/epub/${this.fileName}.epub`
         this.book = new Epub(url)
         this.setCurrentBook(this.book)
         this.initRendition()
         this.initGesture()
+        this.parseBook()
         this.book.ready.then(() => {
           // Simple paginate algorithm
           return this.book.locations.generate(750 * (window.innerWidth / 375) * (getFontSize((this.fileName) / 16)))
