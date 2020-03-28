@@ -77,18 +77,6 @@
       this.updateProgressBg()
     },
     computed: {
-      getSectionName () {
-        if (this.section && this.navigation) {
-          return this.navigation[this.section].label
-        }
-        // if (this.section) {
-        //   const sectionInfo = this.currentBook.section(this.section)
-        //   if (sectionInfo && sectionInfo.href && this.currentBook && this.currentBook.navigation) {
-        //     return this.currentBook.navigation.get(sectionInfo.href).label
-        //   }
-        // }
-        return ''
-      }
     }
   }
 </script>

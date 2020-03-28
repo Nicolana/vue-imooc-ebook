@@ -6,6 +6,9 @@
       @click="onMaskClick"
       @touchmove="move"
       @touchend="moveEnd"
+      @mousedown.left="onMouseEnter"
+      @mousemove.left="onMouseMove"
+      @mouseup.left="onMouseEnd"
     ></div>
   </div>
 </template>
@@ -28,6 +31,26 @@
     name: 'EbookReader',
     mixins: [ebookMixin],
     methods: {
+      // 1 - 鼠标进入状态
+      // 2 - 鼠标进入后的移动
+      // 3 - 鼠标从移动状态松手
+      // 4 - 鼠标还原
+      onMouseEnd (e) {},
+      onMouseMove (e) {
+        if (this.mouseState === 1) {
+          console.log('you are moving')
+          this.mouseState = 2
+        } else if (this.mouseState === 2) {
+          console.log('你进入了第二阶段')
+        }
+        e.preventDefault()
+        e.stopPropagation()
+      },
+      onMouseEnter (e) {
+        this.mouseState = 1
+        e.preventDefault()
+        e.stopPropagation()
+      },
       move (e) {
         let offsetY = 0
         if (this.firstOffsetY) {
@@ -118,6 +141,7 @@
           width: innerWidth,
           height: innerHeight,
           method: 'default'
+          // flow: 'scrolled'
         })
         const location = getLocation(this.fileName)
         this.display(location, () => {
