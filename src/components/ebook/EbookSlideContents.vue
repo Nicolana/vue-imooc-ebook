@@ -53,7 +53,7 @@
           :class="{'selected': section === index}"
           @click="display(item.href, hideTitleAndMenu)"
         >{{item.label}}</span>
-        <span class="slide-contents-item-page"></span>
+        <span class="slide-contents-item-page">{{item.page}}</span>
       </div>
     </scroll>
     <scroll
@@ -240,7 +240,11 @@
           line-height: px2rem(16);
           @include ellipsis2(1)
         }
-        .slide-contents-item-page {}
+        .slide-contents-item-page {
+          flex: 0 0 px2rem(30);
+          font-size: px2rem(10);
+          @include right;
+        }
       }
     }
     .slide-search-list {
