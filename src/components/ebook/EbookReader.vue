@@ -35,19 +35,39 @@
       // 2 - 鼠标进入后的移动
       // 3 - 鼠标从移动状态松手
       // 4 - 鼠标还原
-      onMouseEnd (e) {},
+      onMouseEnd (e) {
+        if (this.mouseState === 2) {
+          this.setOffsetY(0)
+          this.firstOffsetY = null
+          this.mouseState = 3
+        } else {
+          this.mouseState = 4
+        }
+        const time = e.timeStamp - this.mouseStartTime
+        if (time < 200) {
+          this.mouseState = 4
+        }
+        e.preventDefault()
+        e.stopPropagation()
+      },
       onMouseMove (e) {
         if (this.mouseState === 1) {
-          console.log('you are moving')
           this.mouseState = 2
         } else if (this.mouseState === 2) {
-          console.log('你进入了第二阶段')
+          let offsetY = 0
+          if (this.firstOffsetY) {
+            offsetY = e.clientY - this.firstOffsetY // 拖动当前的位置减去初始值，由此获得Y轴的偏移量
+            this.setOffsetY(offsetY)
+          } else {
+            this.firstOffsetY = e.clientY // 拖动的起点
+          }
         }
         e.preventDefault()
         e.stopPropagation()
       },
       onMouseEnter (e) {
         this.mouseState = 1
+        this.mouseStartTime = e.timeStamp
         e.preventDefault()
         e.stopPropagation()
       },
@@ -67,6 +87,9 @@
         this.firstOffsetY = null
       },
       onMaskClick (e) {
+        if (this.mouseState && (this.mouseState === 2 || this.mouseState === 3)) {
+          return
+        }
         const offsetX = e.offsetX
         const width = window.innerWidth
         if (offsetX > 0 && offsetX < width * 0.3) {
@@ -210,10 +233,13 @@
         this.initRendition()
         // this.initGesture()
         this.parseBook()
+
+        // 分页算法
         this.book.ready.then(() => {
           // Simple paginate algorithm
           return this.book.locations.generate(750 * (window.innerWidth / 375) * (getFontSize((this.fileName) / 16)))
         }).then(locations => {
+          console.log(locations, this.navigation)
           this.setBookAvailable(true)
           this.refreshLocation()
         })
