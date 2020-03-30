@@ -2,6 +2,21 @@ import { mapGetters, mapActions } from 'vuex'
 import { addCss, themeList } from './book'
 import { getBookmark, getReadTime, saveLocation } from './localStorage'
 
+export const storeHomeMixin = {
+  computed: {
+    ...mapGetters([
+      'offsetY',
+      'hotSearchOffsetY'
+    ])
+  },
+  methods: {
+    ...mapActions([
+      'setOffsetY',
+      'setHotSearchOffsetY'
+    ])
+  }
+}
+
 export const ebookMixin = {
   computed: {
     ...mapGetters([
